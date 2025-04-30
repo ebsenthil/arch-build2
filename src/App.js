@@ -1,12 +1,5 @@
-import { Amplify } from 'aws-amplify';
-import { API } from 'aws-amplify/api';
-import awsconfig from './aws-exports';
-
-Amplify.configure(awsconfig);
-
 import React, { useState } from 'react';
 import './App.css';
-
 
 function App() {
   const [projectDescription, setProjectDescription] = useState('');
@@ -16,13 +9,20 @@ function App() {
   const generateDocument = async () => {
     setLoading(true);
     try {
-      const response = await API.post('DocumentAPI', '/generate-document', {
-        body: {
+      const response = await fetch('/generate-document', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           project_description: projectDescription,
           project_id: "demo123"
-        }
+        }),
       });
-      setSections(response.sections);
+
+      // Assuming the response is a JSON object with a 'sections' property
+      const data = await response.json();
+      setSections(data.sections);
     } catch (error) {
       alert("Error generating document: " + error.message);
     } finally {
@@ -58,4 +58,3 @@ function App() {
 }
 
 export default App;
-
